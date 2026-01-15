@@ -8,13 +8,25 @@ import QuotePortrait from '@/public/testimonial-portrait.jpg';
 import Dashboard from '@/public/dashboard.png';
 import Stripe from '@/public/stripe.svg';
 import {Button} from '@/components/ui/button';
-import {ArrowRight, Quote} from 'lucide-react';
-import * as LucideIcons from 'lucide-react';
+import {
+  ArrowRight,
+  Quote,
+  CalendarCheck,
+  CreditCard,
+  ReceiptText,
+  type LucideIcon,
+} from 'lucide-react';
 import {useSession} from 'next-auth/react';
 import Link from 'next/link';
 import React from 'react';
 import {useGetStripeAccount} from '@/app/hooks/useGetStripeAccount';
 import {useZoneConfig} from '@/app/hooks/useZoneConfig';
+
+const ICON_MAP: Record<string, LucideIcon> = {
+  CalendarCheck,
+  CreditCard,
+  ReceiptText,
+};
 
 function Card({
   icon,
@@ -162,7 +174,7 @@ export default function LandingPage() {
             </p>
             <div className="flex flex-col gap-3 sm:flex-row sm:gap-6">
               {config?.features?.items?.map((feature, index) => {
-                const IconComponent = (LucideIcons as any)[feature.icon];
+                const IconComponent = ICON_MAP[feature.icon];
                 return (
                   <Card
                     key={index}
