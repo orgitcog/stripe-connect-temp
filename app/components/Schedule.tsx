@@ -3,6 +3,7 @@ import Container from '@/app/components/Container';
 import Image from 'next/image';
 import {Badge} from '@/components/ui/badge';
 import {ChevronLeft, ChevronRight, ChevronDown} from 'lucide-react';
+import {useZoneConfig} from '@/app/hooks/useZoneConfig';
 
 const SCHEDULE_HEIGHT = 1440;
 const MINUTES_IN_BUSINESS_DAY = 600;
@@ -75,11 +76,15 @@ const renderHourBlock = (hour: string) => {
 };
 
 const Schedule = () => {
+  const {config} = useZoneConfig();
+  const scheduleLabel = config?.terminology?.service?.schedule || 'schedule';
+  const providerLabel = config?.terminology?.service?.provider || 'provider';
+
   return (
     <div>
       <div className="relative space-y-4">
         <div className="flex justify-between gap-2 sm:items-center">
-          <h1 className="text-xl font-bold">Today&apos;s schedule</h1>
+          <h1 className="text-xl font-bold">Today&apos;s {scheduleLabel}</h1>
           <div className="font-bold text-accent">{getCurrentDate()}</div>
         </div>
         <div className="relative left-0 z-30 flex w-full flex-row">

@@ -1,6 +1,7 @@
 import {Stripe} from 'stripe';
 import {authOptions} from '@/lib/auth';
 import {stripe} from '@/lib/stripe';
+import {getZoneConfig} from '@/lib/zoneConfig';
 import {getServerSession} from 'next-auth';
 import {NextRequest} from 'next/server';
 
@@ -44,6 +45,7 @@ function getRandomInt(min: number, max: number) {
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
+    const zoneConfig = getZoneConfig();
     const redirectUrl = `${process.env.NEXTAUTH_URL}/settings`;
     const params = await req.json();
 
@@ -85,7 +87,9 @@ export async function POST(req: NextRequest) {
         ],
         payment_intent_data: {
           description: nameAndDescription,
-          statement_descriptor: 'FurEver',
+          statement_descriptor:
+            zoneConfig.stripe?.statementDescriptor ||
+            zoneConfig.branding.displayName,
         },
         mode: 'payment',
         success_url: redirectUrl,

@@ -1,9 +1,10 @@
 import type {AuthOptions} from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import dbConnect from '@/lib/dbConnect';
-import Salon from '../app/models/salon';
+import Account from '../app/models/account';
 import {stripe} from '@/lib/stripe';
 import {resolveControllerParams} from './utils';
+import {getZoneConfig} from '@/lib/zoneConfig';
 import Stripe from 'stripe';
 
 export const authOptions: AuthOptions = {
@@ -76,7 +77,7 @@ export const authOptions: AuthOptions = {
             return null;
           }
 
-          user = await Salon.findOne({email});
+          user = await Account.findOne({email});
           if (!user) {
             return null;
           }
@@ -117,7 +118,7 @@ export const authOptions: AuthOptions = {
             return null;
           }
 
-          user = await Salon.findOne({email});
+          user = await Account.findOne({email});
           if (!user) {
             return null;
           }
@@ -157,23 +158,23 @@ export const authOptions: AuthOptions = {
             return null;
           }
 
-          user = await Salon.findOne({stripeAccountId: stripeAccountId});
+          user = await Account.findOne({stripeAccountId: stripeAccountId});
           if (!user) {
             // See if they exist on the platform
             const stripeAccount =
               await stripe.accounts.retrieve(stripeAccountId);
             if (stripeAccount?.email) {
               // Create the account locally
-              user = new Salon({
+              user = new Account({
                 email: stripeAccount.email,
                 password,
                 firstName: stripeAccount.individual?.first_name,
                 lastName: stripeAccount.individual?.last_name,
                 stripeAccountId: stripeAccountId,
               });
-              console.log('Creating Salon...');
+              console.log('Creating Account...');
               await user!.save();
-              console.log('Salon was created');
+              console.log('Account was created');
             } else {
               console.log(
                 'Could not find a user for account id',
@@ -196,7 +197,7 @@ export const authOptions: AuthOptions = {
     }),
     CredentialsProvider({
       id: 'createprefilledaccount',
-      name: 'Create a prefilled Stripe account and Furever account',
+      name: 'Create a prefilled Stripe account and platform account',
       credentials: {
         email: {},
         password: {},
@@ -204,6 +205,7 @@ export const authOptions: AuthOptions = {
       },
       async authorize(credentials, req) {
         await dbConnect();
+        const zoneConfig = getZoneConfig();
 
         const bankAccountToken = (
           await stripe.tokens.create({
@@ -230,22 +232,22 @@ export const authOptions: AuthOptions = {
         let user = null;
         try {
           // Look for existing user.
-          user = await Salon.findOne({email});
+          user = await Account.findOne({email});
           if (user) {
             console.log('Found an existing user, cannot sign up again');
             return null;
           }
 
-          user = new Salon({
+          user = new Account({
             email,
             password,
             quickstartAccount: true,
             setup: false,
             changedPassword: false,
           });
-          console.log('Creating Salon...');
+          console.log('Creating Account...');
           await user!.save();
-          console.log('Salon was created');
+          console.log('Account was created');
         } catch (error: any) {
           console.log(
             'Got an error authorizing and creating a user during signup',
@@ -273,7 +275,8 @@ export const authOptions: AuthOptions = {
             business_type: 'individual',
             business_profile: {
               mcc: '7299',
-              name: credentials?.businessName || 'Furever',
+              name:
+                credentials?.businessName || zoneConfig.branding.displayName,
               product_description: 'Description',
               support_address: {
                 line1: 'address_full_match',
@@ -281,10 +284,16 @@ export const authOptions: AuthOptions = {
                 state: 'CA',
                 postal_code: '94080',
               },
-              support_email: 'furever@stripe.com',
+              support_email:
+                zoneConfig.stripe?.supportEmail ||
+                `support@${zoneConfig.zone.domain}`,
               support_phone: '0000000000',
-              support_url: 'https://furever.dev',
-              url: 'https://furever.dev',
+              support_url:
+                zoneConfig.stripe?.supportUrl ||
+                `https://${zoneConfig.zone.domain}`,
+              url:
+                zoneConfig.stripe?.supportUrl ||
+                `https://${zoneConfig.zone.domain}`,
             },
             individual: {
               first_name: 'Jenny',
@@ -311,12 +320,16 @@ export const authOptions: AuthOptions = {
             },
             settings: {
               card_payments: {
-                statement_descriptor_prefix: 'FurEver',
+                statement_descriptor_prefix:
+                  zoneConfig.stripe?.statementDescriptor ||
+                  zoneConfig.branding.displayName,
                 statement_descriptor_prefix_kana: null,
                 statement_descriptor_prefix_kanji: null,
               },
               payments: {
-                statement_descriptor: 'FurEver',
+                statement_descriptor:
+                  zoneConfig.stripe?.statementDescriptor ||
+                  zoneConfig.branding.displayName,
                 statement_descriptor_kana: undefined,
                 statement_descriptor_kanji: undefined,
               },
@@ -345,11 +358,11 @@ export const authOptions: AuthOptions = {
 
           user.stripeAccountId = account.id;
           user.businessName = credentials?.businessName;
-          console.log('Updating Salon...');
+          console.log('Updating Account...');
           await user!.save();
 
           console.log(
-            'Salon was updated and updated salon is',
+            'Account was updated and updated account is',
             user,
             account.requirements?.disabled_reason
           );
@@ -380,6 +393,7 @@ export const authOptions: AuthOptions = {
       },
       async authorize(credentials, req) {
         await dbConnect();
+        const zoneConfig = getZoneConfig();
         console.log('Signing up');
 
         const email = credentials?.email;
@@ -391,7 +405,7 @@ export const authOptions: AuthOptions = {
         let user = null;
         try {
           // Look for existing user.
-          user = await Salon.findOne({email});
+          user = await Account.findOne({email});
           if (!user) {
             console.log('Could not find an existing user for the email', email);
             return null;
@@ -411,7 +425,9 @@ export const authOptions: AuthOptions = {
             country: credentials?.country || 'US',
             business_type: businessType,
             business_profile: {
-              name: credentials?.businessName || 'Furever Pet Salon',
+              name:
+                credentials?.businessName ||
+                `${zoneConfig.branding.displayName} ${zoneConfig.terminology.account.singular}`,
             },
             email: email,
             controller: resolveControllerParams({
@@ -436,9 +452,9 @@ export const authOptions: AuthOptions = {
 
           user.stripeAccountId = account.id;
           user.businessName = credentials?.businessName;
-          console.log('Updating Salon...');
+          console.log('Updating Account...');
           await user!.save();
-          console.log('Salon was updated');
+          console.log('Account was updated');
         } catch (error: any) {
           console.log('Got an error creating a Stripe account', error);
           return null;
@@ -473,21 +489,21 @@ export const authOptions: AuthOptions = {
         let user = null;
         try {
           // Look for existing user.
-          user = await Salon.findOne({email});
+          user = await Account.findOne({email});
           if (user) {
             console.log('Found an existing user, cannot sign up again');
             return null;
           }
 
-          user = new Salon({
+          user = new Account({
             email,
             password,
             setup: true,
             changedPassword: true,
           });
-          console.log('Creating Salon...');
+          console.log('Creating Account...');
           await user!.save();
-          console.log('Salon was created');
+          console.log('Account was created');
         } catch (error: any) {
           console.log(
             'Got an error authorizing and creating a user during signup',

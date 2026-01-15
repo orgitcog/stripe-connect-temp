@@ -38,7 +38,7 @@ export default function Dashboard() {
   return (
     <>
       <h1 className="text-3xl font-bold" data-testid="title-header">
-        Woof woof, {stripeAccount?.individual?.first_name || 'human'}!
+        Welcome, {stripeAccount?.individual?.first_name || 'there'}!
       </h1>
       <div className={`${showBanner ? 'flex' : 'hidden'} flex-col`}>
         <EmbeddedComponentContainer

@@ -1,6 +1,7 @@
-import Salon from '@/app/models/salon';
+import Account from '@/app/models/account';
 import {authOptions} from '@/lib/auth';
 import {stripe} from '@/lib/stripe';
+import {getZoneConfig} from '@/lib/zoneConfig';
 import {getServerSession} from 'next-auth';
 import {NextRequest} from 'next/server';
 
@@ -64,6 +65,7 @@ const createPaymentIntentForNonCardPayments = async (
     customerId,
     description,
     connectedAccountId,
+    zoneConfig,
   }: {
     amount: number;
     currency: string;
@@ -72,6 +74,7 @@ const createPaymentIntentForNonCardPayments = async (
     customerId: string;
     description: string;
     connectedAccountId: string | undefined;
+    zoneConfig: ReturnType<typeof getZoneConfig>;
   }
 ) => {
   let paymentMethod;
@@ -108,7 +111,9 @@ const createPaymentIntentForNonCardPayments = async (
           payment_method: paymentMethod.id,
           description,
           customer: customerId,
-          statement_descriptor: 'FurEver',
+          statement_descriptor:
+            zoneConfig.stripe?.statementDescriptor ||
+            zoneConfig.branding.displayName,
           confirmation_method: 'manual',
           confirm: true,
           payment_method_types: ['us_bank_account'],
@@ -158,7 +163,9 @@ const createPaymentIntentForNonCardPayments = async (
           payment_method: paymentMethod.id,
           description,
           customer: customerId,
-          statement_descriptor: 'FurEver',
+          statement_descriptor:
+            zoneConfig.stripe?.statementDescriptor ||
+            zoneConfig.branding.displayName,
           confirmation_method: 'manual',
           confirm: true,
           payment_method_types: ['sepa_debit'],
@@ -179,6 +186,7 @@ const createPaymentIntentForNonCardPayments = async (
 export async function POST(req: NextRequest) {
   console.log('in function');
   const json = await req.json();
+  const zoneConfig = getZoneConfig();
 
   const {amount: inputAmount, currency, status, count: inputCount} = json;
   console.log('Creating payments with the following parameters:', json);
@@ -225,6 +233,7 @@ export async function POST(req: NextRequest) {
             customerId: customer.id,
             description,
             connectedAccountId: accountId,
+            zoneConfig,
           };
 
           if (status.startsWith('card_')) {
@@ -237,7 +246,9 @@ export async function POST(req: NextRequest) {
                 payment_method_types: ['card'],
                 description,
                 customer: metadata.customerId,
-                statement_descriptor: 'FurEver',
+                statement_descriptor:
+                  zoneConfig.stripe?.statementDescriptor ||
+                  zoneConfig.branding.displayName,
                 confirmation_method: 'manual',
                 confirm: true,
                 ...(status === 'card_uncaptured'

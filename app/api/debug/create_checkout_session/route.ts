@@ -1,4 +1,5 @@
 import {getServerSession} from 'next-auth/next';
+import {getZoneConfig} from '@/lib/zoneConfig';
 import {authOptions} from '@/lib/auth';
 import {stripe} from '@/lib/stripe';
 
@@ -80,7 +81,9 @@ export async function POST() {
         ],
         payment_intent_data: {
           description: nameAndDescription,
-          statement_descriptor: 'FurEver',
+          statement_descriptor:
+            getZoneConfig().stripe?.statementDescriptor ||
+            getZoneConfig().branding.displayName,
         },
         mode: 'payment',
         success_url: redirectUrl,

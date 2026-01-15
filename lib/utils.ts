@@ -114,20 +114,26 @@ export function rgbToHex(r: number, g: number, b: number): string {
 /**
  * Checks if the user has any custom branding values set
  * @param settings - Settings object containing primaryColor, companyName, and companyLogoUrl
+ * @param defaultBrandName - Optional default brand name to compare against (defaults to config value or 'Platform')
  * @returns true if any custom branding is detected, false otherwise
  */
-export function hasCustomBranding(settings: {
-  primaryColor?: string;
-  companyName?: string;
-  companyLogoUrl?: string;
-}): boolean {
+export function hasCustomBranding(
+  settings: {
+    primaryColor?: string;
+    companyName?: string;
+    companyLogoUrl?: string;
+  },
+  defaultBrandName?: string
+): boolean {
   const {primaryColor, companyName, companyLogoUrl} = settings;
 
   // Check if primary color is set and differs from default
   const hasCustomColor = primaryColor && primaryColor !== defaultPrimaryColor;
 
   // Check if company name is set and differs from default
-  const hasCustomName = companyName && companyName !== 'Furever';
+  // Use provided defaultBrandName or fallback to 'Platform'
+  const brandName = defaultBrandName || 'Platform';
+  const hasCustomName = companyName && companyName !== brandName;
 
   // Check if company logo is set
   const hasCustomLogo = companyLogoUrl && companyLogoUrl !== '';

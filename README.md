@@ -1,14 +1,42 @@
-# FurEver: Stripe Connect embedded components demo
+# Stripe Connect Embedded Components Demo
 
-FurEver is a vertical SaaS grooming platform for pet salons to manage their e2e business operations. FurEver wants to provide access to Stripe products and UIs directly in their website, at a fraction of the engineering cost, using [Stripe Connect](https://stripe.com/connect) and [Stripe Connect embedded components](https://docs.stripe.com/connect/get-started-connect-embedded-components).
+This is a configurable demo platform showcasing [Stripe Connect](https://stripe.com/connect) and [Stripe Connect embedded components](https://docs.stripe.com/connect/get-started-connect-embedded-components). The platform can be customized for any vertical (pet grooming, fitness studios, bookstores, etc.) using zone configuration files.
 
-**See a live version on [furever.dev](https://furever.dev).**
+**Default Demo:** FurEver - a vertical SaaS grooming platform for pet salons. See a live version on [furever.dev](https://furever.dev).
 
 <img src="public/cover.png">
 
+## 🎯 Zone Configuration System
+
+This repository includes a powerful **zone configuration system** that allows you to adapt the entire platform for different verticals without code changes. Simply configure:
+
+- **Branding** (logos, colors, taglines)
+- **Terminology** (customize terms like "salon" → "studio", "pet" → "member")
+- **Features** (customize feature descriptions)
+- **Content** (testimonials, CTAs, etc.)
+
+**📖 See [ZONE_CONFIG.md](./ZONE_CONFIG.md) for detailed configuration instructions.**
+
+### Quick Start with Zone Configuration
+
+1. Choose or create a zone configuration file:
+
+   ```bash
+   cp zone.example.json my-zone.json
+   # Edit my-zone.json for your vertical
+   ```
+
+2. Set the configuration path in `.env`:
+
+   ```bash
+   ZONE_CONFIG_PATH="my-zone.json"
+   ```
+
+3. Run the application (see installation instructions below)
+
 ## Features
 
-FurEver showcases the integration between a platform's website, [Stripe Connect](https://stripe.com/connect), and [Stripe Connect embedded components](https://docs.stripe.com/connect/get-started-connect-embedded-components). Users sign up within the platform's website and through the process, a corresponding Stripe unified account is created with the following configuration:
+This platform showcases the integration between a platform's website, [Stripe Connect](https://stripe.com/connect), and [Stripe Connect embedded components](https://docs.stripe.com/connect/get-started-connect-embedded-components). Users sign up within the platform's website and through the process, a corresponding Stripe unified account is created with the following configuration:
 
 - Stripe owns loss liability
 - Platform owns pricing
@@ -17,7 +45,7 @@ FurEver showcases the integration between a platform's website, [Stripe Connect]
 
 The user will then onboard with Stripe via embedded onboarding. Thereafter, Connect embedded components will provide the UI surfaces for account management and dashboard UI elements with just a few lines of code. The demo website also uses the Stripe API to create test payments and payouts. This app also contains a basic authentication system.
 
-FurEver makes use of the following [Connect embedded components](https://docs.stripe.com/connect/supported-embedded-components):
+This demo makes use of the following [Connect embedded components](https://docs.stripe.com/connect/supported-embedded-components):
 
 - `<ConnectOnboarding />` enables an embedded onboarding experience without redirecting users to Stripe hosted onboarding.
 - `<ConnectPayments />` provides a list to display Stripe payments, refunds, and disputes. This also includes handling list filtering, pagination, and CSV exports.

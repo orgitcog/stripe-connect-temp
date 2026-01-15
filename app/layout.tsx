@@ -10,6 +10,7 @@ import {EmbeddedComponentBorderProvider} from '@/app/hooks/EmbeddedComponentBord
 import QueryProvider from '@/app/providers/QueryProvider';
 import {useSession} from 'next-auth/react';
 import {useEffect} from 'react';
+import {useZoneConfig} from '@/app/hooks/useZoneConfig';
 
 const fontSans = FontSans({
   subsets: ['latin'],
@@ -18,19 +19,22 @@ const fontSans = FontSans({
 
 function DynamicTitle() {
   const {data: session} = useSession();
+  const {config} = useZoneConfig();
 
   useEffect(() => {
-    const companyName = session?.user?.companyName || 'Furever';
+    const defaultName = config?.branding?.displayName || 'Platform';
+    const companyName = session?.user?.companyName || defaultName;
     document.title =
-      companyName === 'Furever' ? companyName : `(DEMO) ${companyName}`;
-  }, [session?.user?.companyName]);
+      companyName === defaultName ? companyName : `(DEMO) ${companyName}`;
+  }, [session?.user?.companyName, config?.branding?.displayName]);
 
   return null;
 }
 
 function DynamicFavicon() {
   const {data: session} = useSession();
-  const defaultFavicon = '/favicon.png';
+  const {config} = useZoneConfig();
+  const defaultFavicon = config?.branding?.favicon || '/favicon.png';
 
   useEffect(() => {
     const companyLogo = session?.user?.companyLogoUrl;
@@ -41,7 +45,7 @@ function DynamicFavicon() {
     link.rel = 'shortcut icon';
     link.href = companyLogo || defaultFavicon;
     document.getElementsByTagName('head')[0].appendChild(link);
-  }, [session?.user?.companyLogoUrl]);
+  }, [session?.user?.companyLogoUrl, defaultFavicon]);
 
   return null;
 }
@@ -54,7 +58,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <title>Furever</title>
+        <title>Stripe Connect Demo</title>
       </head>
       <body
         className={cn(

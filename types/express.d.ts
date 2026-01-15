@@ -3,6 +3,7 @@ import express from 'express';
 declare global {
   namespace Express {
     export interface User {
+      // Deprecated: Use businessName instead
       salon: {
         license: string;
         name: string;

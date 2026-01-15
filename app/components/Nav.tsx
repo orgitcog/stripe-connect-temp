@@ -23,10 +23,20 @@ import {useToolsContext} from '../hooks/ToolsPanelProvider';
 import {SettingsContext} from '../contexts/settings';
 import {hasCustomBranding} from '@/lib/utils';
 import {useGetStripeAccount} from '@/app/hooks/useGetStripeAccount';
+import {useZoneConfig} from '@/app/hooks/useZoneConfig';
 import * as React from 'react';
 import {arePreviewComponentsEnabled} from '../(dashboard)/utils/arePreviewComponentsEnabled';
 
-const navigationMenuItems = [
+type NavigationItem = {
+  label: string;
+  href: string;
+  icon: typeof HomeIcon;
+  paths: string[];
+  useEntityLabel?: boolean;
+  shouldDisplayFilter?: (stripeAccount: Stripe.Account) => boolean;
+};
+
+const navigationMenuItems: NavigationItem[] = [
   {
     label: 'Home',
     href: '/home',
@@ -34,10 +44,11 @@ const navigationMenuItems = [
     paths: [],
   },
   {
-    label: 'Pets',
+    label: '', // Will be set dynamically from zone config
     href: '/pets',
     icon: PetsIcon,
     paths: [],
+    useEntityLabel: true, // Flag to use entity terminology
   },
   {
     label: 'Payments',
@@ -76,8 +87,12 @@ const Nav = () => {
   const settings = React.useContext(SettingsContext);
   const {stripeAccount: stripeAccountData} = useGetStripeAccount();
   const {open, handleOpenChange} = useToolsContext();
+  const {config} = useZoneConfig();
 
   const [showMobileNavItems, setShowMobileNavItems] = React.useState(false);
+
+  // Get entity label from config
+  const entityLabel = config?.terminology?.entity?.displayName || 'Entities';
 
   return (
     <div className="border-gray-border fixed z-50 w-full flex-col border-b bg-screen-foreground sm:fixed sm:flex sm:h-screen sm:w-52 sm:border-b-0 sm:border-r sm:p-1 lg:w-64 lg:p-3">
@@ -88,12 +103,14 @@ const Nav = () => {
               width={36}
               height={36}
               src={session?.user?.companyLogoUrl || FureverLogo}
-              alt={`${session?.user?.companyName || 'Furever'} Logo`}
+              alt={`${session?.user?.companyName || config?.branding?.displayName || 'Platform'} Logo`}
               className="h-9 w-9 sm:h-10 sm:w-10"
               sizes="100px"
               priority
             />
-            {session?.user?.companyName || 'Furever'}
+            {session?.user?.companyName ||
+              config?.branding?.displayName ||
+              'Platform'}
           </div>
         </Link>
         <Button
@@ -109,9 +126,12 @@ const Nav = () => {
       >
         <ul className="w-full flex-col">
           {navigationMenuItems
-            .filter(({shouldDisplayFilter, label}) => {
-              // Hide Pets if user has custom branding
-              if (label === 'Pets' && hasCustomBranding(settings)) {
+            .filter(({shouldDisplayFilter, label, useEntityLabel}) => {
+              // Hide entity page if user has custom branding
+              if (
+                useEntityLabel &&
+                hasCustomBranding(settings, config?.branding?.displayName)
+              ) {
                 return false;
               }
 
@@ -122,32 +142,40 @@ const Nav = () => {
 
               return shouldDisplayFilter(stripeAccountData);
             })
-            .map((item) => (
-              <li key={item.label} className="p-1">
-                <Link href={item.href}>
-                  <Button
-                    className={`w-full justify-start text-lg text-primary hover:bg-accent-subdued ${
-                      pathname === item.href || item.paths.includes(pathname)
-                        ? 'bg-accent-subdued text-accent'
-                        : 'bg-foreground'
-                    }`}
-                    onClick={() => setShowMobileNavItems(false)}
-                    tabIndex={-1}
-                  >
-                    <item.icon
-                      className="mr-2"
-                      size={20}
-                      color={`${
+            .map((item) => {
+              // Use entity label for the entity menu item
+              const displayLabel = item.useEntityLabel
+                ? entityLabel
+                : item.label;
+
+              return (
+                <li key={item.href} className="p-1">
+                  <Link href={item.href}>
+                    <Button
+                      className={`w-full justify-start text-lg text-primary hover:bg-accent-subdued ${
                         pathname === item.href || item.paths.includes(pathname)
-                          ? 'var(--accent)'
-                          : 'var(--primary)'
+                          ? 'bg-accent-subdued text-accent'
+                          : 'bg-foreground'
                       }`}
-                    />{' '}
-                    {item.label}
-                  </Button>
-                </Link>
-              </li>
-            ))}
+                      onClick={() => setShowMobileNavItems(false)}
+                      tabIndex={-1}
+                    >
+                      <item.icon
+                        className="mr-2"
+                        size={20}
+                        color={`${
+                          pathname === item.href ||
+                          item.paths.includes(pathname)
+                            ? 'var(--accent)'
+                            : 'var(--primary)'
+                        }`}
+                      />{' '}
+                      {displayLabel}
+                    </Button>
+                  </Link>
+                </li>
+              );
+            })}
         </ul>
       </nav>
       <div
