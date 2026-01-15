@@ -8,17 +8,13 @@ import QuotePortrait from '@/public/testimonial-portrait.jpg';
 import Dashboard from '@/public/dashboard.png';
 import Stripe from '@/public/stripe.svg';
 import {Button} from '@/components/ui/button';
-import {
-  ArrowRight,
-  CalendarCheck,
-  CreditCard,
-  Quote,
-  ReceiptText,
-} from 'lucide-react';
+import {ArrowRight, Quote} from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 import {useSession} from 'next-auth/react';
 import Link from 'next/link';
 import React from 'react';
 import {useGetStripeAccount} from '@/app/hooks/useGetStripeAccount';
+import {useZoneConfig} from '@/app/hooks/useZoneConfig';
 
 function Card({
   icon,
@@ -102,6 +98,16 @@ const AuthButtons = () => {
 };
 
 export default function LandingPage() {
+  const {config, isLoading} = useZoneConfig();
+
+  if (isLoading || !config) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-xl text-subdued">Loading...</div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="relative">
@@ -109,22 +115,23 @@ export default function LandingPage() {
           <div className="flex w-full flex-row items-center justify-center gap-3 py-4">
             <Image
               src={FureverLogo}
-              alt="Furever logo"
+              alt={config?.branding?.logo?.alt || 'Logo'}
               height={48}
               width={48}
               sizes="92px"
               priority
             />
-            <p className="text-2xl font-bold text-white">Furever</p>
+            <p className="text-2xl font-bold text-white">
+              {config?.branding?.displayName}
+            </p>
           </div>
 
           <div className="max-w-[700px] py-8 sm:py-16">
             <h1 className="mb-1 text-center text-4xl font-bold leading-tight text-white drop-shadow sm:text-6xl">
-              Manage your pet business with ease.
+              {config?.branding?.tagline}
             </h1>
             <p className="pt-4 text-center text-xl text-white drop-shadow sm:text-[24px]">
-              Furever is the world&apos;s leading pet grooming platform. Join
-              our team of salons and expand your business.
+              {config?.branding?.heroDescription}
             </p>
           </div>
           <div className="flex h-[52px] flex-row gap-x-4">
@@ -147,26 +154,28 @@ export default function LandingPage() {
       <div className="relative bg-paw-pattern bg-[size:426px]">
         <div className="mx-auto max-w-screen-lg px-4">
           <div className="flex flex-col items-center py-12 sm:py-20">
-            <h3 className="text-lg font-bold text-accent">FEATURES</h3>
+            <h3 className="text-lg font-bold text-accent">
+              {config?.features?.description}
+            </h3>
             <p className="mb-12 text-center text-3xl font-bold text-black">
-              Everything you need to manage your pet business.
+              {config?.features?.title}
             </p>
             <div className="flex flex-col gap-3 sm:flex-row sm:gap-6">
-              <Card
-                icon={<CalendarCheck color="var(--accent)" />}
-                title="Simple scheduling"
-                description="Easily set up appointments, organize your calendar, and manage different salons."
-              />
-              <Card
-                icon={<CreditCard color="var(--accent)" />}
-                title="Accept payments"
-                description="Take credit card and bank payments, track all your transactions, and get paid out faster."
-              />
-              <Card
-                icon={<ReceiptText color="var(--accent)" />}
-                title="Manage your finances"
-                description="Get access to banking, instant financing, issue credit cards, and view transactions."
-              />
+              {config?.features?.items?.map((feature, index) => {
+                const IconComponent = (LucideIcons as any)[feature.icon];
+                return (
+                  <Card
+                    key={index}
+                    icon={
+                      IconComponent ? (
+                        <IconComponent color="var(--accent)" />
+                      ) : null
+                    }
+                    title={feature.title}
+                    description={feature.description}
+                  />
+                );
+              })}
             </div>
           </div>
         </div>
@@ -186,9 +195,7 @@ export default function LandingPage() {
             />
             <div className="flex flex-col gap-y-6">
               <p className="relative text-3xl font-bold text-black">
-                “Furever has transformed the way we manage our salon! Booking
-                and payments are seamless now, and our clients love the
-                convenience!”
+                &quot;{config?.testimonial?.quote}&quot;
                 <Quote
                   fill="var(--accent)"
                   strokeWidth={0}
@@ -206,8 +213,12 @@ export default function LandingPage() {
                   className="h-12 w-12 overflow-hidden rounded-full object-cover shadow-lg"
                 />
                 <div>
-                  <p className="text-xl font-bold text-accent">Jamie L.</p>
-                  <p className="text-md text-secondary">Paws & Relax Spa</p>
+                  <p className="text-xl font-bold text-accent">
+                    {config?.testimonial?.author}
+                  </p>
+                  <p className="text-md text-secondary">
+                    {config?.testimonial?.authorTitle}
+                  </p>
                 </div>
               </div>
             </div>
@@ -221,11 +232,10 @@ export default function LandingPage() {
           <div className="flex flex-col items-center gap-12 pb-40 pt-12 text-white sm:flex-row sm:pb-32 sm:pt-20">
             <div className="">
               <h2 className="mb-2 text-left text-4xl font-bold">
-                Get started today.
+                {config?.cta?.title}
               </h2>
               <p className="mb-6 text-left text-xl sm:text-2xl">
-                Furever is the world&apos;s leading pet grooming platform. Join
-                our team of salons and expand your business
+                {config?.cta?.description}
               </p>
               <Link href="/signup">
                 <Button
@@ -241,7 +251,7 @@ export default function LandingPage() {
             <div className="w-full overflow-hidden rounded-lg shadow-xl">
               <Image
                 src={Dashboard}
-                alt="A screenshot of Furever dashboard"
+                alt={`A screenshot of ${config?.branding?.displayName} dashboard`}
                 sizes="50vw"
                 className="w-full"
               />
@@ -270,7 +280,7 @@ export default function LandingPage() {
             >
               Stripe Connect embedded components
             </a>
-            . Furever is not a real product.
+            . {config?.branding?.displayName} is not a real product.
           </p>
         </div>
         <div className="flex justify-between">
