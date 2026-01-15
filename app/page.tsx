@@ -114,7 +114,12 @@ export default function LandingPage() {
 
   if (isLoading || !config) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div
+        className="flex min-h-screen items-center justify-center"
+        role="status"
+        aria-live="polite"
+        aria-label="Loading page configuration"
+      >
         <div className="text-xl text-subdued">Loading...</div>
       </div>
     );

@@ -1,7 +1,7 @@
 'use client';
 
 import {useQuery} from '@tanstack/react-query';
-import type {ZoneConfig} from '@/app/contexts/zoneConfig';
+import type {ZoneConfig} from '@/lib/zoneConfig';
 
 export function useZoneConfig() {
   const {data, isLoading, error} = useQuery<ZoneConfig>({

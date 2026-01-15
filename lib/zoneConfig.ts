@@ -70,6 +70,50 @@ export interface ZoneConfig {
 let cachedConfig: ZoneConfig | null = null;
 
 /**
+ * Validates basic zone configuration structure
+ */
+function validateZoneConfig(config: any): config is ZoneConfig {
+  if (!config || typeof config !== 'object') {
+    return false;
+  }
+
+  // Validate required top-level properties
+  if (
+    !config.zone ||
+    !config.branding ||
+    !config.terminology ||
+    !config.features
+  ) {
+    return false;
+  }
+
+  // Validate zone
+  if (!config.zone.name || !config.zone.description || !config.zone.domain) {
+    return false;
+  }
+
+  // Validate branding
+  if (
+    !config.branding.displayName ||
+    !config.branding.logo ||
+    !config.branding.logo.path
+  ) {
+    return false;
+  }
+
+  // Validate terminology
+  if (
+    !config.terminology.account ||
+    !config.terminology.entity ||
+    !config.terminology.service
+  ) {
+    return false;
+  }
+
+  return true;
+}
+
+/**
  * Load zone configuration from the specified config file
  * Defaults to ZONE_CONFIG_PATH environment variable or 'furever.zone.json'
  */
@@ -83,7 +127,15 @@ export function loadZoneConfig(): ZoneConfig {
 
   try {
     const configFile = fs.readFileSync(fullPath, 'utf-8');
-    cachedConfig = JSON.parse(configFile) as ZoneConfig;
+    const parsedConfig = JSON.parse(configFile);
+
+    if (!validateZoneConfig(parsedConfig)) {
+      throw new Error(
+        'Zone configuration is invalid or missing required fields'
+      );
+    }
+
+    cachedConfig = parsedConfig;
     return cachedConfig;
   } catch (error) {
     console.error(`Failed to load zone config from ${fullPath}:`, error);
