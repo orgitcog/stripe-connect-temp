@@ -173,11 +173,11 @@ export default function LandingPage() {
               {config?.features?.title}
             </p>
             <div className="flex flex-col gap-3 sm:flex-row sm:gap-6">
-              {config?.features?.items?.map((feature, index) => {
+              {config?.features?.items?.map((feature) => {
                 const IconComponent = ICON_MAP[feature.icon];
                 return (
                   <Card
-                    key={index}
+                    key={feature.title}
                     icon={
                       IconComponent ? (
                         <IconComponent color="var(--accent)" />
