@@ -78,8 +78,7 @@ export function loadZoneConfig(): ZoneConfig {
     return cachedConfig;
   }
 
-  const configPath =
-    process.env.ZONE_CONFIG_PATH || 'furever.zone.json';
+  const configPath = process.env.ZONE_CONFIG_PATH || 'furever.zone.json';
   const fullPath = path.join(process.cwd(), configPath);
 
   try {

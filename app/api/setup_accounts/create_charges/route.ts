@@ -65,6 +65,7 @@ const createPaymentIntentForNonCardPayments = async (
     customerId,
     description,
     connectedAccountId,
+    zoneConfig,
   }: {
     amount: number;
     currency: string;
@@ -73,6 +74,7 @@ const createPaymentIntentForNonCardPayments = async (
     customerId: string;
     description: string;
     connectedAccountId: string | undefined;
+    zoneConfig: ReturnType<typeof getZoneConfig>;
   }
 ) => {
   let paymentMethod;
@@ -109,7 +111,9 @@ const createPaymentIntentForNonCardPayments = async (
           payment_method: paymentMethod.id,
           description,
           customer: customerId,
-          statement_descriptor: zoneConfig.stripe?.statementDescriptor || zoneConfig.branding.displayName,
+          statement_descriptor:
+            zoneConfig.stripe?.statementDescriptor ||
+            zoneConfig.branding.displayName,
           confirmation_method: 'manual',
           confirm: true,
           payment_method_types: ['us_bank_account'],
@@ -159,7 +163,9 @@ const createPaymentIntentForNonCardPayments = async (
           payment_method: paymentMethod.id,
           description,
           customer: customerId,
-          statement_descriptor: zoneConfig.stripe?.statementDescriptor || zoneConfig.branding.displayName,
+          statement_descriptor:
+            zoneConfig.stripe?.statementDescriptor ||
+            zoneConfig.branding.displayName,
           confirmation_method: 'manual',
           confirm: true,
           payment_method_types: ['sepa_debit'],
@@ -227,6 +233,7 @@ export async function POST(req: NextRequest) {
             customerId: customer.id,
             description,
             connectedAccountId: accountId,
+            zoneConfig,
           };
 
           if (status.startsWith('card_')) {
@@ -239,7 +246,9 @@ export async function POST(req: NextRequest) {
                 payment_method_types: ['card'],
                 description,
                 customer: metadata.customerId,
-                statement_descriptor: zoneConfig.stripe?.statementDescriptor || zoneConfig.branding.displayName,
+                statement_descriptor:
+                  zoneConfig.stripe?.statementDescriptor ||
+                  zoneConfig.branding.displayName,
                 confirmation_method: 'manual',
                 confirm: true,
                 ...(status === 'card_uncaptured'

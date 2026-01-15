@@ -21,7 +21,10 @@ export default function AuthLayout({
   const {data, status} = useSession();
   const settings = useContext(SettingsContext);
   const {config} = useZoneConfig();
-  const hasCustomBrandingValues = hasCustomBranding(settings, config?.branding?.displayName);
+  const hasCustomBrandingValues = hasCustomBranding(
+    settings,
+    config?.branding?.displayName
+  );
   const brandName = config?.branding?.displayName || 'Platform';
 
   const SignOut = () => {

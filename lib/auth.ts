@@ -275,7 +275,8 @@ export const authOptions: AuthOptions = {
             business_type: 'individual',
             business_profile: {
               mcc: '7299',
-              name: credentials?.businessName || zoneConfig.branding.displayName,
+              name:
+                credentials?.businessName || zoneConfig.branding.displayName,
               product_description: 'Description',
               support_address: {
                 line1: 'address_full_match',
@@ -283,10 +284,16 @@ export const authOptions: AuthOptions = {
                 state: 'CA',
                 postal_code: '94080',
               },
-              support_email: zoneConfig.stripe?.supportEmail || `support@${zoneConfig.zone.domain}`,
+              support_email:
+                zoneConfig.stripe?.supportEmail ||
+                `support@${zoneConfig.zone.domain}`,
               support_phone: '0000000000',
-              support_url: zoneConfig.stripe?.supportUrl || `https://${zoneConfig.zone.domain}`,
-              url: zoneConfig.stripe?.supportUrl || `https://${zoneConfig.zone.domain}`,
+              support_url:
+                zoneConfig.stripe?.supportUrl ||
+                `https://${zoneConfig.zone.domain}`,
+              url:
+                zoneConfig.stripe?.supportUrl ||
+                `https://${zoneConfig.zone.domain}`,
             },
             individual: {
               first_name: 'Jenny',
@@ -313,12 +320,16 @@ export const authOptions: AuthOptions = {
             },
             settings: {
               card_payments: {
-                statement_descriptor_prefix: zoneConfig.stripe?.statementDescriptor || zoneConfig.branding.displayName,
+                statement_descriptor_prefix:
+                  zoneConfig.stripe?.statementDescriptor ||
+                  zoneConfig.branding.displayName,
                 statement_descriptor_prefix_kana: null,
                 statement_descriptor_prefix_kanji: null,
               },
               payments: {
-                statement_descriptor: zoneConfig.stripe?.statementDescriptor || zoneConfig.branding.displayName,
+                statement_descriptor:
+                  zoneConfig.stripe?.statementDescriptor ||
+                  zoneConfig.branding.displayName,
                 statement_descriptor_kana: undefined,
                 statement_descriptor_kanji: undefined,
               },
@@ -414,7 +425,9 @@ export const authOptions: AuthOptions = {
             country: credentials?.country || 'US',
             business_type: businessType,
             business_profile: {
-              name: credentials?.businessName || `${zoneConfig.branding.displayName} ${zoneConfig.terminology.account.singular}`,
+              name:
+                credentials?.businessName ||
+                `${zoneConfig.branding.displayName} ${zoneConfig.terminology.account.singular}`,
             },
             email: email,
             controller: resolveControllerParams({

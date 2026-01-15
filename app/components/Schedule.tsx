@@ -79,7 +79,7 @@ const Schedule = () => {
   const {config} = useZoneConfig();
   const scheduleLabel = config?.terminology?.service?.schedule || 'schedule';
   const providerLabel = config?.terminology?.service?.provider || 'provider';
-  
+
   return (
     <div>
       <div className="relative space-y-4">

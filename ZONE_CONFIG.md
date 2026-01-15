@@ -5,6 +5,7 @@ This repository has been generalized into a template system that can be configur
 ## Overview
 
 The zone configuration system allows you to:
+
 - Customize branding (logos, colors, names)
 - Define platform-specific terminology
 - Configure features and messaging
@@ -13,15 +14,18 @@ The zone configuration system allows you to:
 ## Quick Start
 
 1. **Choose a Configuration Method:**
+
    - Use the default `furever.zone.json` (pet grooming demo)
    - Copy `zone.example.json` to create your own
    - Create a new zone config from scratch
 
 2. **Set Environment Variable (Optional):**
+
    ```bash
    # In your .env file
    ZONE_CONFIG_PATH="your-zone.json"
    ```
+
    If not set, defaults to `furever.zone.json`
 
 3. **Run the Application:**
@@ -63,18 +67,18 @@ Define how your platform refers to different concepts:
 {
   "terminology": {
     "account": {
-      "singular": "business",  // e.g., "salon", "studio", "store"
+      "singular": "business", // e.g., "salon", "studio", "store"
       "plural": "businesses"
     },
     "entity": {
-      "singular": "item",      // e.g., "pet", "book", "member"
+      "singular": "item", // e.g., "pet", "book", "member"
       "plural": "items",
-      "displayName": "Items"   // Used in navigation
+      "displayName": "Items" // Used in navigation
     },
     "service": {
-      "provider": "provider",  // e.g., "groomer", "trainer", "instructor"
-      "session": "session",    // e.g., "appointment", "class", "booking"
-      "schedule": "schedule"   // e.g., "calendar", "timetable"
+      "provider": "provider", // e.g., "groomer", "trainer", "instructor"
+      "session": "session", // e.g., "appointment", "class", "booking"
+      "schedule": "schedule" // e.g., "calendar", "timetable"
     }
   }
 }
@@ -93,7 +97,7 @@ Configure up to 3 feature cards for your landing page:
       {
         "title": "Feature 1",
         "description": "Description of feature",
-        "icon": "CalendarCheck"  // Lucide icon name
+        "icon": "CalendarCheck" // Lucide icon name
       }
     ]
   }
@@ -135,9 +139,11 @@ Configure up to 3 feature cards for your landing page:
 ## Example Configurations
 
 ### Pet Grooming (FurEver - Default)
+
 See `furever.zone.json` for the full pet grooming salon configuration.
 
 ### Fitness Studio
+
 ```json
 {
   "zone": {
@@ -170,6 +176,7 @@ See `furever.zone.json` for the full pet grooming salon configuration.
 ```
 
 ### Bookstore
+
 ```json
 {
   "zone": {
@@ -199,13 +206,16 @@ See `furever.zone.json` for the full pet grooming salon configuration.
 ## Customization Beyond Configuration
 
 ### Assets
+
 Place your custom assets in the `/public` directory:
+
 - Logo: `/logo.png`
 - Favicon: `/favicon.png`
 - Hero image: `/hero-image.jpeg`
 - Testimonial images
 
 ### Data Files
+
 The configuration can point to custom data files:
 
 ```json
@@ -265,15 +275,18 @@ ZONE_CONFIG_PATH="bookstore.zone.json" PORT=3002 npm start
 ## Troubleshooting
 
 ### Configuration Not Loading
+
 - Check the file path in `ZONE_CONFIG_PATH`
 - Ensure the JSON is valid (use a JSON validator)
 - Check console for error messages
 
 ### Missing Branding
+
 - Verify all required fields are present in your config
 - Check that image paths are correct and files exist in `/public`
 
 ### Terminology Issues
+
 - Ensure singular/plural forms are consistent
 - Test all pages after changing terminology
 - Some pages may need manual adjustment for complex terminology changes
@@ -281,6 +294,7 @@ ZONE_CONFIG_PATH="bookstore.zone.json" PORT=3002 npm start
 ## Support
 
 For issues or questions:
+
 1. Check the schema: `zone.config.schema.json`
 2. Review example configs: `furever.zone.json` and `zone.example.json`
 3. Check the main README.md for general setup instructions
@@ -288,6 +302,7 @@ For issues or questions:
 ## Future Enhancements
 
 Potential improvements to the zone system:
+
 - Multi-language support
 - Theme customization beyond colors
 - Dynamic data loading

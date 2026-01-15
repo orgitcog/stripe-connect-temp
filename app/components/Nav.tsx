@@ -27,7 +27,16 @@ import {useZoneConfig} from '@/app/hooks/useZoneConfig';
 import * as React from 'react';
 import {arePreviewComponentsEnabled} from '../(dashboard)/utils/arePreviewComponentsEnabled';
 
-const navigationMenuItems = [
+type NavigationItem = {
+  label: string;
+  href: string;
+  icon: typeof HomeIcon;
+  paths: string[];
+  useEntityLabel?: boolean;
+  shouldDisplayFilter?: (stripeAccount: Stripe.Account) => boolean;
+};
+
+const navigationMenuItems: NavigationItem[] = [
   {
     label: 'Home',
     href: '/home',
@@ -99,7 +108,9 @@ const Nav = () => {
               sizes="100px"
               priority
             />
-            {session?.user?.companyName || config?.branding?.displayName || 'Platform'}
+            {session?.user?.companyName ||
+              config?.branding?.displayName ||
+              'Platform'}
           </div>
         </Link>
         <Button
@@ -117,7 +128,10 @@ const Nav = () => {
           {navigationMenuItems
             .filter(({shouldDisplayFilter, label, useEntityLabel}) => {
               // Hide entity page if user has custom branding
-              if (useEntityLabel && hasCustomBranding(settings, config?.branding?.displayName)) {
+              if (
+                useEntityLabel &&
+                hasCustomBranding(settings, config?.branding?.displayName)
+              ) {
                 return false;
               }
 
@@ -130,8 +144,10 @@ const Nav = () => {
             })
             .map((item) => {
               // Use entity label for the entity menu item
-              const displayLabel = item.useEntityLabel ? entityLabel : item.label;
-              
+              const displayLabel = item.useEntityLabel
+                ? entityLabel
+                : item.label;
+
               return (
                 <li key={item.href} className="p-1">
                   <Link href={item.href}>
@@ -148,7 +164,8 @@ const Nav = () => {
                         className="mr-2"
                         size={20}
                         color={`${
-                          pathname === item.href || item.paths.includes(pathname)
+                          pathname === item.href ||
+                          item.paths.includes(pathname)
                             ? 'var(--accent)'
                             : 'var(--primary)'
                         }`}

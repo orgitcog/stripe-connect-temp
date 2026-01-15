@@ -81,7 +81,9 @@ export async function POST() {
         ],
         payment_intent_data: {
           description: nameAndDescription,
-          statement_descriptor: getZoneConfig().stripe?.statementDescriptor || getZoneConfig().branding.displayName,
+          statement_descriptor:
+            getZoneConfig().stripe?.statementDescriptor ||
+            getZoneConfig().branding.displayName,
         },
         mode: 'payment',
         success_url: redirectUrl,

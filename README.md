@@ -20,12 +20,14 @@ This repository includes a powerful **zone configuration system** that allows yo
 ### Quick Start with Zone Configuration
 
 1. Choose or create a zone configuration file:
+
    ```bash
    cp zone.example.json my-zone.json
    # Edit my-zone.json for your vertical
    ```
 
 2. Set the configuration path in `.env`:
+
    ```bash
    ZONE_CONFIG_PATH="my-zone.json"
    ```
