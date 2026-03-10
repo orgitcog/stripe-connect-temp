@@ -74,26 +74,32 @@ yarn validate-change
 ## Key Patterns
 
 ### Path Aliases
+
 Use `@/*` for imports from project root:
+
 ```typescript
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import {cn} from '@/lib/utils';
+import {Button} from '@/components/ui/button';
 ```
 
 ### Zone Configuration
+
 The platform uses a zone configuration system for customization. Configuration files are JSON (e.g., `furever.zone.json`). Set `ZONE_CONFIG_PATH` in `.env` to change the active configuration.
 
 ### Stripe Connect Integration
+
 - Client integration: `app/hooks/useConnect.ts`
 - Server endpoint: `app/api/account_session/route.ts`
 - Webhook handler: `app/api/webhooks/route.ts`
 
 ### Authentication
+
 Uses NextAuth.js with credentials provider. Auth utilities in `lib/auth.ts`.
 
 ## Environment Variables
 
 Required variables (see `.env.example`):
+
 - `STRIPE_SECRET_KEY` - Stripe secret key
 - `STRIPE_PUBLIC_KEY` - Stripe publishable key
 - `STRIPE_WEBHOOK_SECRET` - Webhook signing secret
@@ -122,5 +128,6 @@ stripe trigger payment_intent.succeeded
 ## Preview Components
 
 Preview components are disabled by default. To enable:
+
 1. Request access via Stripe documentation
 2. Set `NEXT_PUBLIC_ENABLE_PREVIEW_COMPONENTS=1` in `.env`
